@@ -46,14 +46,6 @@ func TestAddGetDelete(t *testing.T) {
 
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
-	// newParcel := Parcel{
-	// 	Client:    13,
-	// 	Status:    ParcelStatusRegistered,
-	// 	Address:   "test_address",
-	// 	CreatedAt: time.Now().UTC().Format(time.RFC3339),
-	// }
-
-	// id, err := store.Add(newParcel)
 	id, err := store.Add(parcel)
 	require.NoError(t, err)
 	require.NotEmpty(t, id)
