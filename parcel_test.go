@@ -2,10 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -31,22 +33,53 @@ func getTestParcel() Parcel {
 // TestAddGetDelete проверяет добавление, получение и удаление посылки
 func TestAddGetDelete(t *testing.T) {
 	// prepare
-	db, err := // настройте подключение к БД
+	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	defer db.Close()
+
 	store := NewParcelStore(db)
 	parcel := getTestParcel()
 
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
+	// newParcel := Parcel{
+	// 	Client:    13,
+	// 	Status:    ParcelStatusRegistered,
+	// 	Address:   "test_address",
+	// 	CreatedAt: time.Now().UTC().Format(time.RFC3339),
+	// }
+
+	// id, err := store.Add(newParcel)
+	id, err := store.Add(parcel)
+	require.NoError(t, err)
+	require.NotEmpty(t, id)
 
 	// get
 	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
+	p, err := store.Get(id)
+	require.NoError(t, err)
+
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
+	assert.Equal(t, parcel.Client, p.Client)
+	assert.Equal(t, parcel.Status, p.Status)
+	assert.Equal(t, parcel.Address, p.Address)
+	assert.Equal(t, parcel.CreatedAt, p.CreatedAt)
 
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
+	err = store.Delete(id)
+	require.NoError(t, err)
+
 	// проверьте, что посылку больше нельзя получить из БД
+	p, err = store.Get(id)
+	require.Empty(t, p)
 }
 
+/*
 // TestSetAddress проверяет обновление адреса
 func TestSetAddress(t *testing.T) {
 	// prepare
@@ -118,4 +151,6 @@ func TestGetByClient(t *testing.T) {
 		// убедитесь, что все посылки из storedParcels есть в parcelMap
 		// убедитесь, что значения полей полученных посылок заполнены верно
 	}
+
 }
+*/
