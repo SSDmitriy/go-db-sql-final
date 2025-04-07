@@ -76,7 +76,7 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 
 	//проверка ошибки итерации по rows
 	if err := rows.Err(); err != nil {
-		return []Parcel{}, err
+		return nil, err
 	}
 
 	return res, nil
@@ -120,16 +120,9 @@ func (s ParcelStore) SetAddress(number int, address string) error {
 func (s ParcelStore) Delete(number int) error {
 	// реализуйте удаление строки из таблицы parcel
 	// удалять строку можно только если значение статуса registered
-	row := s.db.QueryRow("SELECT number, status FROM parcel WHERE number = :number",
-		sql.Named("number", number))
-	num := -1
-	status := ""
-	err := row.Scan(&num, &status)
-
-	if num >= 0 && status == ParcelStatusRegistered {
-		_, err = s.db.Exec("DELETE FROM parcel WHERE number = :number", sql.Named("number", number))
-		return err
-	}
+	_, err := s.db.Exec("DELETE FROM parcel WHERE number = :number AND status = :registeredStatus;",
+		sql.Named("number", number),
+		sql.Named("registeredStatus", ParcelStatusRegistered))
 
 	return err
 }
