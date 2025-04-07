@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type ParcelStore struct {
@@ -22,7 +21,6 @@ func (s ParcelStore) Add(p Parcel) (int, error) {
 		sql.Named("created_at", p.CreatedAt))
 
 	if err != nil {
-		fmt.Println("Ошибка INSERT new parcel:", err)
 		return 0, err
 	}
 
@@ -46,8 +44,7 @@ func (s ParcelStore) Get(number int) (Parcel, error) {
 	err := row.Scan(&p.Number, &p.Client, &p.Status, &p.Address, &p.CreatedAt)
 
 	if err != nil {
-		fmt.Println("Ошибка SELECT in parcel:", err)
-		return p, err
+		return Parcel{}, err
 	}
 
 	return p, nil
@@ -60,7 +57,6 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 		sql.Named("client", client))
 
 	if err != nil {
-		fmt.Println("Ошибка SELECT multiple rows:", err)
 		return []Parcel{}, err
 	}
 
@@ -72,7 +68,6 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 
 		err := rows.Scan(&p.Number, &p.Client, &p.Status, &p.Address, &p.CreatedAt)
 		if err != nil {
-			fmt.Println("Ошибка парсинга строк GetByClient:", err)
 		}
 
 		res = append(res, p)
@@ -88,7 +83,6 @@ func (s ParcelStore) SetStatus(number int, status string) error {
 		sql.Named("number", number))
 
 	if err != nil {
-		fmt.Println("Ошибка UPDATE parcel status:", err)
 		return err
 	}
 
@@ -110,7 +104,6 @@ func (s ParcelStore) SetAddress(number int, address string) error {
 			sql.Named("number", number))
 
 		if err != nil {
-			fmt.Println("Ошибка UPDATE parcel new address:", err)
 			return err
 		}
 	}
