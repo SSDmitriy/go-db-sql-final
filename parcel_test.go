@@ -52,10 +52,8 @@ func TestAddGetDelete(t *testing.T) {
 	require.NoError(t, err)
 
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
-	assert.Equal(t, parcel.Client, addedParcel.Client)
-	assert.Equal(t, parcel.Status, addedParcel.Status)
-	assert.Equal(t, parcel.Address, addedParcel.Address)
-	assert.Equal(t, parcel.CreatedAt, addedParcel.CreatedAt)
+	parcel.Number = id
+	assert.Equal(t, parcel, addedParcel)
 
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
